@@ -15,13 +15,13 @@ high_resolution_clock::time_point start;
 void runP1();
 void runP2();
 void runP3();
-void runP4(){}
+void runP4();
 
 void run(){
-  //  runP1();
-  //  runP2();
-    runP3();
-    runP4();
+  runP1();
+  runP2();
+  runP3();
+  runP4();
 }
 
 int main(int argc, char** argv)
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 int solutionP1(vector<int> &client);
 int solutionP2(string &S);
 int solutionP3(int n);
-
+int solutionP4(int K,vector<vector<int>> &A);
 
 void runP1(){
     std::cout << "Test 1" << std::endl;
@@ -151,4 +151,63 @@ int solutionP3(int n){
       }
   }
   return -1;
+}
+
+void runP4(){
+    std::cout << "Test 4" << std::endl;
+
+  vector< vector<int> > A = {{0,1},{0,0}};
+  assert(solutionP4(1,A) == 2);
+  A = {{0,0,0,0},{0,0,1,0},{1,0,0,1}};
+  assert(solutionP4(2,A) == 2);
+  A = {{0,0,0,1},{0,1,0,0},{0,0,1,0},{1,0,0,0},{0,0,0,0}};
+  assert(solutionP4(4,A) == 8);
+}
+
+int fill(vector< vector<int> > &A,int x , int y , int K, int houses){
+  int ans = 0;
+  int M = A.size();
+  int N = A[0].size();
+  /* bfs with no obstacle means fill with manahattan distance
+    we do all the computation in place to save memory adding visits as +=10
+    all information is stored in first digit 0 is empty 1 is house.
+  */
+  for(int i = max(0,x-K); i <= min(M-1,x+K);i++){
+      for(int j = max(0,y-K+abs(i-x)); j <= min(N-1,y+K-abs(i-x));j++){
+          if(A[i][j]%10)continue;
+          A[i][j]+=10;
+          if(A[i][j]/10 == houses)ans++;
+      }
+  }
+
+  return ans;
+}
+
+int solutionP4(int K, vector< vector<int> > &A) {
+
+    /* 
+    Our approach is 
+    Loop over the grid and check for houses
+    For each house visit identify all reachable nodes (manathan(node,house) <= K).
+    The answer contains the nb of nodes that are reachable from all houses 
+    
+    Time Complexity
+    O(M*N*H*(K**2) as we go through all the nodes and for H houses found check for nodes in reach which is in O(K*K)
+    Space Complexity O(1) we did it in place
+    */
+    // step 1 find the houses:
+    int M = A.size();
+    int N = A[0].size();
+    
+    int houses = 0;
+    int ans = 0;
+    for(int i = 0; i < M;i++){
+        for(int j = 0; j < N ; j++){
+            if(A[i][j]!=1)continue;
+            // we found a house lets check which spot are within range
+            ans = fill(A,i,j,K,++houses);
+        }
+    }
+
+    return ans;
 }
