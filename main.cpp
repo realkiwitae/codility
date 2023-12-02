@@ -14,12 +14,12 @@ high_resolution_clock::time_point start;
 
 void runP1();
 void runP2();
-void runP3(){}
+void runP3();
 void runP4(){}
 
 void run(){
-    runP1();
-    runP2();
+  //  runP1();
+  //  runP2();
     runP3();
     runP4();
 }
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 
 int solutionP1(vector<int> &client);
 int solutionP2(string &S);
-
+int solutionP3(int n);
 
 
 void runP1(){
@@ -116,3 +116,39 @@ int solutionP2(string &S){
 
     return ans;
   }
+
+void runP3(){
+  std::cout << "Test 3" << std::endl;
+  assert (solutionP3(1) == -1);
+  assert(solutionP3(4) == -1);
+  assert(solutionP3(100) == -1);
+  assert(solutionP3(955) == 4);
+}
+
+int solutionP3(int n){
+
+  /* I do find the solution poorly written as it is "hard" to grasp with this variable names ~*/
+
+  // Decompose n in binary 
+  int d[30];
+  int l = 0;
+  while (n > 0) {
+      d[l] = n % 2;
+      n /= 2;
+      l++;
+  }
+  // l is the length of the binary representation of n (Q in the problem statement)
+  for (int p = 1; p <= l/2; ++p) { // to respect P <= Q/2
+      bool ok = true;
+      for (int i = 0; i < l - p; ++i) {
+          if (d[i] != d[i + p]) {
+              ok = false;
+              break;
+          }
+      }
+      if (ok) {
+          return p;
+      }
+  }
+  return -1;
+}
